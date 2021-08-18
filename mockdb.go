@@ -4,10 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"os"
 
 	// "strings"
 	"time"
 
+	hclog "github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/vault/api"
 	"github.com/hashicorp/vault/sdk/database/dbplugin"
 	"github.com/hashicorp/vault/sdk/database/helper/credsutil"
@@ -15,6 +17,8 @@ import (
 	// "github.com/hashicorp/vault/sdk/helper/dbtxn"
 	// "github.com/hashicorp/vault/sdk/helper/strutil"
 )
+
+var logger hclog.Logger
 
 const (
 	defaultUserCreationMQL           = `CREATE USER "{{username}}" WITH PASSWORD '{{password}}';`
@@ -53,8 +57,17 @@ func new() *Mockdb {
 	}
 }
 
+func init() {
+	logger = hclog.New(&hclog.LoggerOptions{
+		Name:   "plugin-mockdb",
+		Level:  hclog.Trace,
+		Output: os.Stderr,
+	})
+}
+
 // Run instantiates an Mockdb object, and runs the RPC server for the plugin
 func Run(apiTLSConfig *api.TLSConfig) error {
+	logger.Info("starting run")
 	dbType, err := New()
 	if err != nil {
 		return err
@@ -66,6 +79,7 @@ func Run(apiTLSConfig *api.TLSConfig) error {
 }
 
 func (m *Mockdb) Type() (string, error) {
+	logger.Info("the type is MOCK")
 	return mockdbTypeName, nil
 }
 
