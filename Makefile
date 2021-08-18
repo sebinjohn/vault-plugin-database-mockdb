@@ -7,13 +7,14 @@ all: export
 
 export:
 export VAULT_ADDR=http://127.0.0.1:8200
+export VAULT_TOKEN=root
 
 default: dev
 
 dev-flow: dev disable enable create-role get-creds
 
 start-vault:
-	vault server -dev -dev-root-token-id=root -dev-plugin-dir=./vault/plugins
+	vault server -dev -dev-root-token-id=root -dev-plugin-dir=./vault/plugins -log-level=$(LOG_LEVEL)
 	echo "Open a new terminal, and run export VAULT_ADDR=http://127.0.0.1:8200"
 
 dev:
